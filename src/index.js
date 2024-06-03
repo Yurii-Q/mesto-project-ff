@@ -1,7 +1,7 @@
 import './pages/index.css';
 import {initialCards} from './cards.js';
 import {createCard} from './components/card.js';
-import { openModal, closeModal } from './components/modal.js';
+import { openPopup, closePopup } from './components/modal.js';
 
 // Темплейт карточки
 const cardTmp = document.querySelector('#card-template').content;
@@ -37,7 +37,7 @@ function openPopupImg(image, title, evt) {
   popupImage.src = image.src;
   popupImage.alt = image.alt;
   evt.stopPropagation();
-  openModal(popupShowImg);
+  openPopup(popupShowImg);
 }
 
 function likeCard(likeButton) {
@@ -52,18 +52,24 @@ initialCards.forEach((cardData) => {
 
 popups.forEach((popup) => {
   popup.classList.add('popup_is-animated');
+  popup.addEventListener('mousedown', (evt) => {
+    if(evt.target.classList.contains('popup_is-opened') || evt.target.classList.contains('popup__close')) {
+      closePopup(popup);
+    }
+  });
 });
 
 profileEditButton.addEventListener('click', (evt) => {
   evt.stopPropagation();
   nameInput.value = profileTitle.textContent;
   jobInput.value = profileDesciption.textContent;
-  openModal(popupEditProfile);
+  openPopup(popupEditProfile);
 });
 
 profilAddButton.addEventListener('click', (evt) => {
   evt.stopPropagation();
-  openModal(popupAddCard);
+  formAddCard.reset();
+  openPopup(popupAddCard);
 });
 
 // Формы
@@ -82,7 +88,7 @@ function handleFormEditSubmit(evt) {
 
 formEditProfile.addEventListener('submit', (evt) => {
   handleFormEditSubmit(evt);
-  closeModal(popupEditProfile);
+  closePopup(popupEditProfile);
 });
 
 function handleFormAddImgSubmit(evt) {
@@ -101,5 +107,5 @@ function handleFormAddImgSubmit(evt) {
 
 formAddCard.addEventListener('submit', (evt) => {
   handleFormAddImgSubmit(evt);
-  closeModal(popupAddCard);
+  closePopup(popupAddCard);
 });
