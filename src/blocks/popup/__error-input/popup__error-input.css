@@ -1,0 +1,12 @@
+.form__input-error {
+  display: none;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 14.52px;
+  color: red;
+  margin-top: 5px;
+}
+
+.popup__error_visible {
+  display: block;
+}
