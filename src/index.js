@@ -42,6 +42,11 @@ const buttonProcessText = {
   proces: 'Сохранение...'
 }
 
+const buttonDeleteText = {
+  state: 'Да',
+  proces: 'Удаление...'
+}
+
 const validationConfig = {
   formSelector: '.popup__form',
   inputSelector: '.popup__input',
@@ -79,6 +84,7 @@ function toggleLikeCard (cardData, dataProfile, likeButton, likeCount) {
     deleteLikeCard(cardData)
       .then(res => {
         updateDataOfLikes(cardData, res);
+        likeButton.classList.remove('card__like-button_is-active');
       })
       .catch(err => {
         console.log(err);
@@ -88,12 +94,32 @@ function toggleLikeCard (cardData, dataProfile, likeButton, likeCount) {
     likeCard(cardData)
       .then(res => {
         updateDataOfLikes(cardData, res);
+        likeButton.classList.add('card__like-button_is-active');
       })
       .catch(err => {
         console.log(err);
       });
   }
-  likeButton.classList.toggle('card__like-button_is-active');
+}
+
+function removeCard(cardData, cardElement) {
+  const buttonYes = popupDeleteCard.querySelector('.popup__button');
+  const removalCard = () => {
+    buttonYes.textContent = buttonDeleteText.proces;
+    deleteCard(cardData)
+      .then(res => cardElement.remove())
+      .catch(err => {
+        console.log(err);
+      })
+      .finally(() => {
+        buttonYes.textContent = buttonDeleteText.state;
+        closePopup(popupDeleteCard);
+      });
+      buttonYes.removeEventListener('click', removalCard);
+  }
+  buttonYes.addEventListener('click', removalCard);
+  
+  openPopup(popupDeleteCard);
 }
 
 function openPopupImg(image, title, evt) {
@@ -128,7 +154,7 @@ const promiseGetCards = getInitialCards()
 Promise.all([promiseGetProfile, promiseGetCards])
   .then(([dataProfile, cardList]) => {
     cardList.forEach(cardData => {
-      const card = createCard(dataProfile, cardData, cardTmp, deleteCard, openPopupImg, toggleLikeCard, popupDeleteCard);
+      const card = createCard(dataProfile, cardData, cardTmp, removeCard, openPopupImg, toggleLikeCard);
       placesList.append(card);
     });
   });
@@ -183,6 +209,8 @@ function handleFormEditSubmit(evt) {
     .then(newData => {
       profileTitle.textContent = newData.name;
       profileDesciption.textContent = newData.about;
+      closePopup(popupEditProfile);
+      formEditProfile.reset();
     })
     .catch(err => {
       console.log(err);
@@ -190,13 +218,10 @@ function handleFormEditSubmit(evt) {
     .finally(() => {
       buttonSave.textContent = buttonProcessText.state;
     });
-
-  formEditProfile.reset();
 }
 
 formEditProfile.addEventListener('submit', (evt) => {
   handleFormEditSubmit(evt);
-  closePopup(popupEditProfile);
 });
 
 function handleFormAddImgSubmit(evt) {
@@ -211,8 +236,10 @@ function handleFormAddImgSubmit(evt) {
 
   addNewCard(placeName, imgLink)
     .then(newCard => {
-      const card = createCard(newCard.owner, newCard, cardTmp, deleteCard, openPopupImg, toggleLikeCard, popupDeleteCard);
+      const card = createCard(newCard.owner, newCard, cardTmp, removeCard, openPopupImg, toggleLikeCard);
       placesList.prepend(card);
+      closePopup(popupAddCard);
+      formAddCard.reset();
     })
     .catch(err => {
       console.log(err);
@@ -220,13 +247,10 @@ function handleFormAddImgSubmit(evt) {
     .finally(() => {
       buttonSave.textContent = buttonProcessText.state;
     });
-
-  formAddCard.reset();
 }
 
 formAddCard.addEventListener('submit', (evt) => {
   handleFormAddImgSubmit(evt);
-  closePopup(popupAddCard);
 });
 
 function handleFormEditAvatar(evt) {
@@ -239,6 +263,8 @@ function handleFormEditAvatar(evt) {
   setAvatar(avatarLink.value)
     .then(res => {
       profileAvatar.style['background-image'] = `url(${res.avatar})`;
+      closePopup(popupEditAvatar);
+      formEditAvatar.reset();
     })
     .catch(err => {
       console.log(err);
@@ -246,12 +272,9 @@ function handleFormEditAvatar(evt) {
     .finally(() => {
       buttonSave.textContent = buttonProcessText.state;
     });
-
-    formEditAvatar.reset();
 }
 
 formEditAvatar.addEventListener('submit', (evt) => {
   handleFormEditAvatar(evt);
-  closePopup(popupEditAvatar);
 })
 

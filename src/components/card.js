@@ -1,7 +1,7 @@
 import { closePopup, openPopup } from "./modal";
 
 // Функция создания карточки
-function createCard (dataProfile, cardData, cardTmp, deleteCard, openPopupImg, toggleLikeCard, popupDeleteCard) {
+function createCard (dataProfile, cardData, cardTmp, removeCard, openPopupImg, toggleLikeCard) {
   const newCard = cardTmp.querySelector('.card').cloneNode('true');
   const imgCard = newCard.querySelector('.card__image');
   const titleCard = newCard.querySelector('.card__title');
@@ -17,18 +17,7 @@ function createCard (dataProfile, cardData, cardTmp, deleteCard, openPopupImg, t
 
   if(dataProfile._id === cardData.owner._id) {
     buttonDeleteCard.addEventListener('click', () => {
-      const buttonYes = popupDeleteCard.querySelector('.popup__button');
-      buttonYes.addEventListener('click', () => {
-        deleteCard(cardData)
-          .then(res => newCard.remove())
-          .catch(err => {
-            console.log(err);
-          })
-          .finally(() => {
-            closePopup(popupDeleteCard);
-          });
-      });
-      openPopup(popupDeleteCard);
+      removeCard(cardData, newCard);
     });
   }
   else {
