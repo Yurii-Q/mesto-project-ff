@@ -107,13 +107,15 @@ function removeCard(cardData, cardElement) {
   const removalCard = () => {
     buttonYes.textContent = buttonDeleteText.proces;
     deleteCard(cardData)
-      .then(res => cardElement.remove())
+      .then(res => {
+        cardElement.remove();
+        closePopup(popupDeleteCard);
+      })
       .catch(err => {
         console.log(err);
       })
       .finally(() => {
         buttonYes.textContent = buttonDeleteText.state;
-        closePopup(popupDeleteCard);
       });
       buttonYes.removeEventListener('click', removalCard);
   }
